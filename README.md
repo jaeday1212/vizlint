@@ -40,3 +40,9 @@ Depending on your chart, you might also see warnings such as `axis_labels_missin
 ```bash
 vizlint path/to/script_that_makes_plots.py
 ```
+
+By default the CLI uses matplotlib's Agg backend so it runs cleanly in headless CI. If you want to silence specific checks without editing code, pass `--disable` with the rule's function name:
+
+```bash
+vizlint my_script.py --disable axis_labels_missing --disable bar_zero_baseline
+```
