@@ -1,6 +1,7 @@
 from __future__ import annotations
+from collections import Counter
 from dataclasses import dataclass, field
-from typing import Any, Callable, List, Optional
+from typing import Any, Callable, Dict, List, Optional
 
 from .rules.axis_labels_missing import axis_labels_missing
 from .rules.axis_range_overexpanded import axis_range_overexpanded
@@ -33,6 +34,10 @@ class Report:
             hint_text = f" Hint: {i.hint}" if i.hint else ""
             lines.append(f"- {i.severity.upper()} [{i.id}] {i.message}{hint_text}")
         return "\n".join(lines)
+
+    def counts_by_severity(self) -> Dict[str, int]:
+        """Return counts of issues keyed by severity level."""
+        return dict(Counter(issue.severity for issue in self.issues))
 
 
 # ---- Lint orchestration ----
