@@ -28,3 +28,11 @@ vizlint = "vizlint.cli:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/vizlint"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+  "src/vizlint",
+  "README.md",
+  "LICENSE",
+  "pyproject.toml",
+]
