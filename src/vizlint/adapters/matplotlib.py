@@ -10,6 +10,7 @@ class ChartSpec:
     has_bar_container: bool
     has_xlabel: bool
     has_ylabel: bool
+    has_title: bool
     data_y_min: Optional[float]
     data_y_max: Optional[float]
 
@@ -61,6 +62,7 @@ def to_chart_specs(fig_or_ax: Any) -> List[ChartSpec]:
                 has_bar_container=has_bar,
                 has_xlabel=bool(ax.get_xlabel()),
                 has_ylabel=bool(ax.get_ylabel()),
+                has_title=bool(ax.get_title()),
                 data_y_min=data_y_min,
                 data_y_max=data_y_max,
             )

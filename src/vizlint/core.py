@@ -3,10 +3,6 @@ from collections import Counter
 from dataclasses import dataclass, field
 from typing import Any, Callable, Dict, List, Optional
 
-from .rules.axis_labels_missing import axis_labels_missing
-from .rules.axis_range_overexpanded import axis_range_overexpanded
-from .rules.bar_zero_baseline import bar_zero_baseline
-from .rules.title_missing import title_missing
 
 
 @dataclass
@@ -45,13 +41,6 @@ class Report:
 
 RuleFn = Callable[[Any], Optional[Issue]]
 
-DEFAULT_RULES = [
-    bar_zero_baseline,
-    axis_labels_missing,
-    axis_range_overexpanded,
-    title_missing,
-]
-
 
 def _is_matplotlib_obj(obj: Any) -> bool:
     return hasattr(obj, "axes") or obj.__class__.__module__.startswith("matplotlib.")
@@ -76,6 +65,7 @@ def lint(fig_or_ax: Any, rules: Optional[List[RuleFn]] = None) -> Report:
         return report
 
     from .adapters.matplotlib import to_chart_specs
+    from .rules import DEFAULT_RULES
 
     chart_specs = to_chart_specs(fig_or_ax)
     active_rules = rules or DEFAULT_RULES
