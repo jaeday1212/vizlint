@@ -6,6 +6,7 @@ from typing import Any, Callable, Dict, List, Optional
 from .rules.axis_labels_missing import axis_labels_missing
 from .rules.axis_range_overexpanded import axis_range_overexpanded
 from .rules.bar_zero_baseline import bar_zero_baseline
+from .rules.title_missing import title_missing
 
 
 @dataclass
@@ -44,7 +45,12 @@ class Report:
 
 RuleFn = Callable[[Any], Optional[Issue]]
 
-DEFAULT_RULES = [bar_zero_baseline, axis_labels_missing, axis_range_overexpanded]
+DEFAULT_RULES = [
+    bar_zero_baseline,
+    axis_labels_missing,
+    axis_range_overexpanded,
+    title_missing,
+]
 
 
 def _is_matplotlib_obj(obj: Any) -> bool:
