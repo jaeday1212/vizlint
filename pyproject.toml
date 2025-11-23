@@ -1,0 +1,30 @@
+[build-system]
+requires = ["hatchling>=1.24.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "vizlint"
+version = "0.1.0"
+description = "Lint Python visualizations for common misleading patterns."
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "MIT"}
+authors = [{name = "YOUR_NAME"}]
+keywords = ["data-science", "visualization", "matplotlib", "lint", "charts"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Intended Audience :: Science/Research",
+  "Intended Audience :: Developers",
+  "Topic :: Scientific/Engineering :: Visualization"
+]
+dependencies = []
+
+[project.optional-dependencies]
+mpl = ["matplotlib>=3.7"]
+
+[project.scripts]
+vizlint = "vizlint.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/vizlint"]

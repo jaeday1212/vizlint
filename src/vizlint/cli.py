@@ -1,0 +1,45 @@
+from __future__ import annotations
+import argparse
+import runpy
+import sys
+from typing import List
+
+
+def main(argv: List[str] | None = None) -> None:
+    parser = argparse.ArgumentParser(
+        prog="vizlint",
+        description="Lint matplotlib charts in a Python script.",
+    )
+    parser.add_argument("script", help="Path to a Python script that generates matplotlib figures.")
+    args = parser.parse_args(argv)
+
+    try:
+        # Execute the user's script in its own namespace
+        runpy.run_path(args.script, run_name="__main__")
+    except Exception as exc:  # pragma: no cover - pass-thru for CLI
+        print(f"vizlint: failed to run script: {exc}", file=sys.stderr)
+        sys.exit(2)
+
+    try:
+        import matplotlib.pyplot as plt
+        from .core import lint
+    except Exception as exc:  # pragma: no cover - user environment issue
+        print(f"vizlint: matplotlib not available. Install vizlint[mpl]. ({exc})", file=sys.stderr)
+        sys.exit(2)
+
+    figs = list(map(plt.figure, plt.get_fignums()))
+    if not figs:
+        print("vizlint: no matplotlib figures found.")
+        return
+
+    exit_code = 0
+    for idx, fig in enumerate(figs, start=1):
+        report = lint(fig)
+        if not report.is_clean():
+            exit_code = 1
+            print(f"\nFigure {idx}:")
+            print(report.summary())
+        else:
+            print(f"\nFigure {idx}: clean ✅")
+
+    sys.exit(exit_code)
