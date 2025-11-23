@@ -9,7 +9,7 @@ description = "Lint Python visualizations for common misleading patterns."
 readme = "README.md"
 requires-python = ">=3.9"
 license = {text = "MIT"}
-authors = [{name = "YOUR_NAME"}]
+authors = [{name = "jaeday1212"}]
 keywords = ["data-science", "visualization", "matplotlib", "lint", "charts"]
 classifiers = [
   "Programming Language :: Python :: 3",
