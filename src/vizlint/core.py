@@ -60,9 +60,10 @@ def lint(fig_or_ax: Any, rules: Optional[List[RuleFn]] = None) -> Report:
 
     from .adapters.matplotlib import to_chart_specs
     from .rules.bar_zero_baseline import bar_zero_baseline
+    from .rules.axis_labels_missing import axis_labels_missing
 
     chart_specs = to_chart_specs(fig_or_ax)
-    active_rules = rules or [bar_zero_baseline]
+    active_rules = rules or [bar_zero_baseline, axis_labels_missing]
 
     for chart in chart_specs:
         for rule in active_rules:
