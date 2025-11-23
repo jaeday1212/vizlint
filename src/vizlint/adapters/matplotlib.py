@@ -8,6 +8,8 @@ class ChartSpec:
     kind: str  # "bar" | "line" | "scatter" | "hist" | "unknown"
     ylim: Tuple[float, float]
     has_bar_container: bool
+    has_xlabel: bool
+    has_ylabel: bool
 
 
 def _detect_kind(ax: Any) -> Tuple[str, bool]:
@@ -32,6 +34,8 @@ def to_chart_specs(fig_or_ax: Any) -> List[ChartSpec]:
                 kind=kind,
                 ylim=ax.get_ylim(),
                 has_bar_container=has_bar,
+                has_xlabel=bool(ax.get_xlabel()),
+                has_ylabel=bool(ax.get_ylabel()),
             )
         )
     return specs
