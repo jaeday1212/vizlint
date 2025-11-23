@@ -4,6 +4,8 @@ import runpy
 import sys
 from typing import List
 
+from vizlint.rules import DEFAULT_RULES
+
 
 def main(argv: List[str] | None = None) -> None:
     parser = argparse.ArgumentParser(
@@ -11,6 +13,15 @@ def main(argv: List[str] | None = None) -> None:
         description="Lint matplotlib charts in a Python script.",
     )
     parser.add_argument("script", help="Path to a Python script that generates matplotlib figures.")
+    parser.add_argument(
+        "--disable",
+        action="append",
+        default=[],
+        help=(
+            "Disable specific rule names (e.g. --disable axis_labels_missing). "
+            "Rule names correspond to the rule function names."
+        ),
+    )
     args = parser.parse_args(argv)
 
     try:
@@ -21,6 +32,10 @@ def main(argv: List[str] | None = None) -> None:
         sys.exit(2)
 
     try:
+        import matplotlib
+
+        matplotlib.use("Agg", force=False)
+
         import matplotlib.pyplot as plt
         from .core import lint
     except Exception as exc:  # pragma: no cover - user environment issue
@@ -32,9 +47,12 @@ def main(argv: List[str] | None = None) -> None:
         print("vizlint: no matplotlib figures found.")
         return
 
+    disabled = set(args.disable or [])
+    active_rules = [rule for rule in DEFAULT_RULES if rule.__name__ not in disabled]
+
     exit_code = 0
     for idx, fig in enumerate(figs, start=1):
-        report = lint(fig)
+        report = lint(fig, rules=active_rules)
         if not report.is_clean():
             exit_code = 1
             print(f"\nFigure {idx}:")
