@@ -32,6 +32,10 @@ def main(argv: List[str] | None = None) -> None:
         sys.exit(2)
 
     try:
+        import matplotlib
+
+        matplotlib.use("Agg", force=False)
+
         import matplotlib.pyplot as plt
         from .core import lint
     except Exception as exc:  # pragma: no cover - user environment issue
