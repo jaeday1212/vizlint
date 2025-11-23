@@ -6,17 +6,26 @@ from ..adapters.matplotlib import ChartSpec
 
 
 def bar_zero_baseline(chart: ChartSpec) -> Optional[Issue]:
-    """Bar charts should include zero on the y-axis unless explicitly justified."""
+    """
+    Warn when a bar chart hides zero on the y-axis, which can exaggerate
+    perceived deltas between bars.
+    """
     if chart.kind != "bar" or not chart.has_bar_container:
         return None
 
-    y0, _ = chart.ylim
-    if y0 > 0:
-        return Issue(
-            id="bar_zero_baseline",
-            severity="error",
-            message=f"Bar chart y-axis starts at {y0:.3g} instead of 0; may exaggerate differences.",
-            hint="Set ylim bottom to 0 (e.g., ax.set_ylim(bottom=0)) or add an axis-break annotation.",
-        )
+    ymin, ymax = chart.ylim
 
-    return None
+    # Degenerate limits show the user is doing something odd; skip to avoid noise.
+    if ymax <= ymin:
+        return None
+
+    includes_zero = ymin <= 0 <= ymax
+    if includes_zero:
+        return None
+
+    return Issue(
+        id="bar_zero_baseline",
+        severity="warn",
+        message="Bar chart y-axis does not include zero, which can exaggerate differences between bars.",
+        hint="Consider starting the y-axis at zero or switch to a different chart type if you need to zoom in.",
+    )
