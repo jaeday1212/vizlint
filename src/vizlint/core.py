@@ -36,6 +36,22 @@ class Report:
         """Return counts of issues keyed by severity level."""
         return dict(Counter(issue.severity for issue in self.issues))
 
+    def to_dict(self) -> Dict[str, Any]:
+        """Return a JSON-serialisable representation of the report."""
+        return {
+            "is_clean": self.is_clean(),
+            "counts_by_severity": self.counts_by_severity(),
+            "issues": [
+                {
+                    "id": issue.id,
+                    "severity": issue.severity,
+                    "message": issue.message,
+                    "hint": issue.hint,
+                }
+                for issue in self.issues
+            ],
+        }
+
 
 # ---- Lint orchestration ----
 
