@@ -1,5 +1,6 @@
 from __future__ import annotations
 import argparse
+import os
 import runpy
 import sys
 from typing import List
@@ -25,22 +26,29 @@ def main(argv: List[str] | None = None) -> None:
     args = parser.parse_args(argv)
 
     try:
+        if not os.environ.get("MPLBACKEND"):
+            os.environ["MPLBACKEND"] = "Agg"
+
+        import matplotlib
+
+        try:
+            matplotlib.use("Agg", force=True)
+        except TypeError:  # pragma: no cover - extremely old matplotlib
+            matplotlib.use("Agg")
+
+        import matplotlib.pyplot as plt
+    except Exception as exc:  # pragma: no cover - user environment issue
+        print(f"vizlint: matplotlib not available. Install vizlint[mpl]. ({exc})", file=sys.stderr)
+        sys.exit(2)
+
+    try:
         # Execute the user's script in its own namespace
         runpy.run_path(args.script, run_name="__main__")
     except Exception as exc:  # pragma: no cover - pass-thru for CLI
         print(f"vizlint: failed to run script: {exc}", file=sys.stderr)
         sys.exit(2)
 
-    try:
-        import matplotlib
-
-        matplotlib.use("Agg", force=False)
-
-        import matplotlib.pyplot as plt
-        from .core import lint
-    except Exception as exc:  # pragma: no cover - user environment issue
-        print(f"vizlint: matplotlib not available. Install vizlint[mpl]. ({exc})", file=sys.stderr)
-        sys.exit(2)
+    from .core import lint
 
     figs = list(map(plt.figure, plt.get_fignums()))
     if not figs:
